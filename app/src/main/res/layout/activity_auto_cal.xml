@@ -4,4 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="COM0:设备1;COM1:设备2;COM2:设备3;COM3:设备4" />
 </LinearLayout>

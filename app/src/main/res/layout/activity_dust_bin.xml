@@ -5,4 +5,8 @@
     android:layout_centerHorizontal="false"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="COM0:步进电机驱动器; COM1:绿林粉尘仪; LAN:柴田粉尘仪" />
 </LinearLayout>
