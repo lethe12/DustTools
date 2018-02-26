@@ -21,6 +21,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btnDustMeterTester).setOnClickListener(this);
         findViewById(R.id.btnMultiTemperature).setOnClickListener(this);
         findViewById(R.id.btnStepMotorTestTools).setOnClickListener(this);
+
+        findViewById(R.id.btnTest).setOnClickListener(this);
+        ComManager.getInstance().openTcpCom(this);
     }
 
     @Override
@@ -42,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnStepMotorTestTools:
                 intent.setClass(this, StepMotorTesterActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.btnTest:
+                ComManager.getInstance().sendTcpCom();
                 break;
             default:
 

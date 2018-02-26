@@ -132,7 +132,8 @@ public abstract class SerialCommunication {
                             if (flag) {
                                 communicationProtocol(recBuff, recSize,state);
                                 flag = false;
-                                cond.signalAll();
+                                cond.signal();
+                                //cond.signalAll();
                             } else {
                                 asyncCommunicationProtocol(recBuff, recSize);
                             }
@@ -183,7 +184,12 @@ public abstract class SerialCommunication {
                               sendTimeOut = 0;
                               flag = false;
                           }
-                          wait(100);
+                          //wait(100);
+                          try {
+                              Thread.sleep(100);
+                          } catch (InterruptedException e) {
+                              e.printStackTrace();
+                          }
                       }
 
                     }
