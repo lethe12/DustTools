@@ -35,7 +35,8 @@ public abstract class SocketCommunication {
     private final Condition cond = lock.newCondition();
 
 
-    protected abstract boolean isComplete(byte [] buff,int length);/**
+    protected abstract boolean isComplete(byte [] buff,int length);
+    /**
      * 通讯数据流，同步信息，发送立即返回
      * @param rec 返回数组
      * @param size 数组大小
@@ -73,6 +74,18 @@ public abstract class SocketCommunication {
 
     public boolean isConnected(){
         return connected;
+    }
+
+    public void disconnect(){
+        run = false;
+        if(socketClient!=null){
+            try {
+                socketClient.shutdownOutput();
+                socketClient.shutdownInput();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private class WriteThread extends Thread{
@@ -198,23 +211,25 @@ public abstract class SocketCommunication {
                     delay(5000);
                 }
                 connected = false;
-                try {
-                    initSocket();
+                if(run) {
                     try {
-                        receive = socketClient.getInputStream();
-                        send = socketClient.getOutputStream();
-                        connected = true;
-                        Log.d(tag,"已连接服务器");
+                        initSocket();
+                        try {
+                            receive = socketClient.getInputStream();
+                            send = socketClient.getOutputStream();
+                            connected = true;
+                            Log.d(tag, "已连接服务器");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    } catch (SocketException e) {
+                        e.printStackTrace();
+                        Log.d(tag, "连接异常1");
                     } catch (IOException e) {
                         e.printStackTrace();
+                        Log.d(tag, "连接异常2");
                     }
-
-                }catch (SocketException e) {
-                    e.printStackTrace();
-                    Log.d(tag,"连接异常1");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.d(tag,"连接异常2");
                 }
                 try {
                     if(connected){//如成功连接则启动发送线程

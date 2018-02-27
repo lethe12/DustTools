@@ -160,6 +160,23 @@ import android.annotation.SuppressLint;
 		}
 		return ret.toUpperCase();
 	}
+
+	public static String bytesToHexStringWithHex(byte[] src, int size) {
+		String ret = "";
+		if (src == null || size <= 0) {
+			return null;
+		}
+		for (int i = 0; i < size; i++) {
+			String hex = Integer.toHexString(src[i] & 0xFF);
+			// Log.i(TAG, hex);
+			if (hex.length() < 2) {
+				hex = "0" + hex;
+			}
+			hex += "";
+			ret += hex;
+		}
+		return ret.toUpperCase();
+	}
 	
 	/*
 	 * now 当前时间
@@ -349,6 +366,16 @@ import android.annotation.SuppressLint;
 		resbyte[1] = (byte) ((res>>8)&0x000000ff);
 		resbyte[2] = (byte) ((res>>16)&0x000000ff);
 		resbyte[3] = (byte) ((res>>24)&0x000000ff);
+		return resbyte;
+	}
+
+	public static byte[] float2byteBack (float data) {
+		int res = Float.floatToIntBits(data);
+		byte[] resbyte=new byte[4];
+		resbyte[3] = (byte) (res&0x000000ff);
+		resbyte[2] = (byte) ((res>>8)&0x000000ff);
+		resbyte[1] = (byte) ((res>>16)&0x000000ff);
+		resbyte[0] = (byte) ((res>>24)&0x000000ff);
 		return resbyte;
 	}
 	
