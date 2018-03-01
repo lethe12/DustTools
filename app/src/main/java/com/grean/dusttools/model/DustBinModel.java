@@ -2,6 +2,7 @@ package com.grean.dusttools.model;
 
 import android.util.Log;
 
+import com.grean.dusttools.devices.LvlinDustIndicator;
 import com.grean.dusttools.devices.OnReadDustResultListener;
 import com.grean.dusttools.devices.SibataDustIndicator;
 import com.grean.dusttools.presenter.DustBinScanResultListener;
@@ -11,16 +12,19 @@ import com.grean.dusttools.presenter.DustBinScanResultListener;
  */
 
 public class DustBinModel {
+    public static final int INDICATOR_MAX = 6;
     private static final String tag = "DustBinModel";
     private DustBinScanResultListener listener;
     private boolean run = false;
     private SibataDustIndicator [] indicators = new SibataDustIndicator[5];
+    private LvlinDustIndicator referenceIndicator;
 
     public DustBinModel(DustBinScanResultListener listener){
         this.listener = listener;
         for(int i=0;i<5;i++){
-            indicators[i] = new SibataDustIndicator(i+4,new TestIndicator(i));
+            indicators[i] = new SibataDustIndicator(i+4,new TestIndicator(i+1));
         }
+        referenceIndicator = new LvlinDustIndicator(1,new TestIndicator(0));
         Log.d(tag,"开始扫描");
         new ScanThread().start();
     }
@@ -50,6 +54,7 @@ public class DustBinModel {
         public void run() {
             run = true;
             while (run&&(!interrupted())){
+                referenceIndicator.readDust();
                 for(int i=0;i<5;i++){
                     if(!indicators[i].readDust()){
                         break;

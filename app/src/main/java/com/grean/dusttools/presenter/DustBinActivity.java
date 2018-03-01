@@ -25,7 +25,13 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
             super.handleMessage(msg);
             switch (msg.what){
                 case msgUpdateRealTimeResult:
-                    realTime.setText(realTimeString);
+                    String string="";
+                    for(int i=0;i<DustBinModel.INDICATOR_MAX;i++){
+                        if(realTimeString[i]!=null) {
+                            string += realTimeString[i] + "\n";
+                        }
+                    }
+                    realTime.setText(string);
                     break;
                 default:
 
@@ -36,7 +42,7 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
     };
 
     private TextView realTime;
-    private String realTimeString;
+    private String[] realTimeString = new String[DustBinModel.INDICATOR_MAX];
 
     private DustBinModel model;
 
@@ -54,13 +60,13 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
 
     @Override
     public void onTestResult(int num, float result) {
-        realTimeString = "粉尘仪"+String.valueOf(num)+":"+String.valueOf(result);
+        realTimeString[num] = "粉尘仪"+String.valueOf(num)+":"+String.valueOf(result);
         handler.sendEmptyMessage(msgUpdateRealTimeResult);
     }
 
     @Override
     public void onErrorCommunication() {
-
+        Log.d(tag,"结束扫描");
     }
 
     @Override

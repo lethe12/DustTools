@@ -1,5 +1,7 @@
 package com.grean.dusttools.devices;
 
+import android.util.Log;
+
 import com.grean.dusttools.ComManager;
 import com.grean.dusttools.ReadModBusRegistersListener;
 import com.tools;
@@ -10,8 +12,8 @@ import com.tools;
  */
 
 public class SibataDustIndicator {
+    private static final String tag = "SibataDustIndicator";
     private ReadDust readDust;
-    private boolean run;
     private OnReadDustResultListener listener;
 
     public SibataDustIndicator(int comNumber,OnReadDustResultListener listener){
@@ -32,11 +34,13 @@ public class SibataDustIndicator {
         }
 
         private boolean readCpm(){
+            //Log.d(tag,String.valueOf(comNumber));
             return ComManager.getInstance().readRegister(comNumber, (byte) 0x01,1,1,this);
         }
 
         @Override
         public void onComplete(byte[] value, int size) {
+            //Log.d(tag,"收到"+tools.bytesToHexString(value, size));
             listener.onResult(tools.byte2int(value, 3));
         }
     }

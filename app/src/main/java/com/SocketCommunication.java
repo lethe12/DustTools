@@ -116,9 +116,9 @@ public abstract class SocketCommunication {
                             if(sendTimeOut > 4){
                                 sendTimeOut = 0;
                                 flag = false;
-                                Log.d(tag,"发送超时");
+                                //Log.d(tag,"发送超时");
                             }
-                            Log.d(tag,"发送超时计数"+String.valueOf(sendTimeOut));
+                            //Log.d(tag,"发送超时计数"+String.valueOf(sendTimeOut));
                             delay(100);
                         }
                     }

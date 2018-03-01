@@ -33,6 +33,7 @@ public class ComManager {
     public boolean readRegister(int comNumber,byte id,int reg,int num,ReadModBusRegistersListener listener){
         if(isNumOk(comNumber)){
             if(comNumber<=3){
+                //Log.d(tag,"read reg");
                 coms[comNumber].readRegisters(id,reg,num,listener);
                 return true;
             }else{
@@ -90,7 +91,7 @@ public class ComManager {
         if(num >8){
             return false;
         }else if(num > 3){
-            if(socketCom[num-3]==null){
+            if(socketCom[num-4]==null){
                 return false;
             }else{
                 return true;
@@ -119,9 +120,18 @@ public class ComManager {
         @Override
         protected void communicationProtocol(byte[] rec, int size, int state) {
             if(checkFrameWithAddress(rec,size,id)) {
+                switch (state){
+                    case READ_REGISTER:
+                        listener.onComplete(rec,size);
+                        break;
+                    case WRITE_REGISTER:
 
+                        break;
+                    default:
+                        break;
+                }
             }
-            Log.d(tag,"同步接收:size="+String.valueOf(size)+"content="+tools.bytesToHexString(rec,size));
+            //Log.d(tag,"同步接收:size="+String.valueOf(size)+"content="+tools.bytesToHexString(rec,size));
         }
 
         @Override
@@ -179,6 +189,7 @@ public class ComManager {
             this.id = address;
             this.readNumber = readNum;
             this.listener = listener;
+
             return addSendBuff(cmd,READ_REGISTER);
         }
     }
@@ -207,9 +218,11 @@ public class ComManager {
                 if(state == WRITE_REGISTER){
 
                 }else if(state == READ_REGISTER){
+                   // Log.d(tag,"RS232"+String.valueOf(state)+":"+tools.bytesToHexString(rec,size));
                     listener.onComplete(rec,size);
                 }
             }
+
         }
 
         @Override
@@ -257,6 +270,7 @@ public class ComManager {
             cmd[5] = buff[1];
             tools.addCrc16(cmd,0,6);
             this.id = address;
+            //Log.d(tag,"RS232->"+tools.bytesToHexString(cmd,cmd.length));
             addSendBuff(cmd,READ_REGISTER);
         }
 
