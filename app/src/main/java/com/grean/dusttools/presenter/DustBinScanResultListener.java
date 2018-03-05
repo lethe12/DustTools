@@ -1,5 +1,7 @@
 package com.grean.dusttools.presenter;
 
+import com.grean.dusttools.devices.ComparativeDustData;
+
 /**
  * Created by weifeng on 2018/2/27.
  */
@@ -13,4 +15,10 @@ public interface DustBinScanResultListener {
     void onTestResult(int num ,float result);
 
     void onErrorCommunication();
+
+    /**
+     * 插入一条显示记录
+     * @param data
+     */
+    void insertItem(ComparativeDustData data);
 }

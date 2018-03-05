@@ -268,6 +268,15 @@ import android.annotation.SuppressLint;
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		return  sDateFormat.format(new Date(l));
 	}
+
+	/*将时间戳转化为字符串
+	 * */
+	public static String timestamp2stringWithSecond(long l){
+		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String string = sDateFormat.format(new Date(l));
+		return string;
+
+	}
 	
 	/*将时间戳转化为字符串
 	 * */
