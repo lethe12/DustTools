@@ -70,6 +70,17 @@
             android:layout_height="50dp"
             android:background="#cccccc"/>
 
+        <EditText
+            android:id="@+id/et_7"
+            style="@style/et_item"
+            android:hint="-"
+            android:ems="10"
+            android:enabled="false"/>
+        <View
+            android:layout_width="1px"
+            android:layout_height="50dp"
+            android:background="#cccccc"/>
+
     </LinearLayout>
     <View
         android:layout_width="match_parent"

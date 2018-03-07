@@ -24,7 +24,7 @@ import com.grean.dusttools.R;
  */
 public class ItemFragment extends Fragment {
     private static final String tag = "ItemFragment";
-    private EditText et_1,et_2,et_3,et_4,et_5,et_6;
+    private EditText et_1,et_2,et_3,et_4,et_5,et_6,et_7;
     private ArrayList<EditText>list ;
     private ArrayList<String>listString;
 
@@ -60,6 +60,7 @@ public class ItemFragment extends Fragment {
         et_4=(EditText) view.findViewById(R.id.et_4);
         et_5=(EditText) view.findViewById(R.id.et_5);
         et_6=(EditText) view.findViewById(R.id.et_6);
+        et_7=(EditText) view.findViewById(R.id.et_7);
         list.add( et_1);
         list.add( et_2);
         list.add( et_3);
@@ -86,6 +87,9 @@ public class ItemFragment extends Fragment {
                     break;
                 case 5:
                     et_6.setText(listString.get(i));
+                    break;
+                case 6:
+                    et_7.setText(listString.get(i));
                     break;
                 default:
                     break;

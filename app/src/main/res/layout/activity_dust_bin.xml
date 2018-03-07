@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="COM0:步进电机驱动器; COM1:绿林粉尘仪,测量间隔为30s,当粉尘仪浓度变化或时间到达120s时记录数据; LAN:柴田粉尘仪" />
+        android:text="COM0:步进电机驱动器; COM1:绿林粉尘仪,测量间隔为30s,当粉尘仪浓度变化或时间到达120s时记录数据; COM2:PLC; COM3:泽天粉尘仪; LAN:柴田粉尘仪" />
 
     <TextView
         android:id="@+id/tvDustBinRealtime"
@@ -135,6 +135,18 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:text="测试5" />
+
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="50dp"
+                        android:background="#cccccc" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="备用" />
 
                     <View
                         android:layout_width="1px"

@@ -69,6 +69,7 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
                     stirngs[3] = tools.float2String4(dustData.getTest()[2]);
                     stirngs[4] = tools.float2String4(dustData.getTest()[3]);
                     stirngs[5] = tools.float2String4(dustData.getTest()[4]);
+                    stirngs[6] = tools.float2String3(dustData.getBackup());
                     ItemFragment mFOne = new ItemFragment(stirngs);
                     FragmentTransaction tx =getFragmentManager().beginTransaction();
 

@@ -6,6 +6,7 @@ import com.grean.dusttools.devices.ComparativeDustData;
 import com.grean.dusttools.devices.LvlinDustIndicator;
 import com.grean.dusttools.devices.OnReadDustResultListener;
 import com.grean.dusttools.devices.SibataDustIndicator;
+import com.grean.dusttools.devices.ZetianDustIndicator;
 import com.grean.dusttools.presenter.DustBinScanResultListener;
 import com.tools;
 
@@ -28,15 +29,17 @@ import jxl.write.biff.RowsExceededException;
  */
 
 public class DustBinModel {
-    public static final int INDICATOR_MAX = 6;
+    public static final int INDICATOR_MAX = 7;
     private static final String tag = "DustBinModel";
     private DustBinScanResultListener listener;
     private boolean run = false;
     private SibataDustIndicator [] indicators = new SibataDustIndicator[5];
     private LvlinDustIndicator referenceIndicator;
+    private ZetianDustIndicator backUpIndicator;
     private List<ComparativeDustData> list = new ArrayList<>();
     private float lastReference = 0f,nowReference = 0f;
     private float [] sumTest = new float[INDICATOR_MAX];
+    private float backupTest=0f,sumBackupTest = 0f;
     float[] test = new float[INDICATOR_MAX];
 
     private String fileName,pathName;
@@ -47,6 +50,7 @@ public class DustBinModel {
             indicators[i] = new SibataDustIndicator(i+4,new TestIndicator(i+1));
         }
         referenceIndicator = new LvlinDustIndicator(1,new TestIndicator(0));
+        backUpIndicator = new ZetianDustIndicator(3,new TestIndicator(6));
         Log.d(tag,"开始扫描");
         new ScanThread().start();
     }
@@ -65,6 +69,8 @@ public class DustBinModel {
         public void onResult(float value) {
             if(num == 0){//参比粉尘仪
                 nowReference = value;
+            }else if(num == 6){
+                sumBackupTest += value;
             }else{
                 sumTest[num-1] += value;
             }
@@ -104,6 +110,7 @@ public class DustBinModel {
                         break;
                     }
                 }
+                backUpIndicator.readDust();
                 try {
                     sleep(1000);
                 } catch (InterruptedException e) {
@@ -132,11 +139,12 @@ public class DustBinModel {
         for(int i=0;i<INDICATOR_MAX;i++){
             test[i] = sumTest[i] / times;
         }
-        ComparativeDustData data = new ComparativeDustData(tools.nowtime2timestamp(),nowReference,test);
+        backupTest = sumBackupTest / times;
+        ComparativeDustData data = new ComparativeDustData(tools.nowtime2timestamp(),nowReference,test,backupTest);
         lastReference = nowReference;
         list.add(data);
         listener.insertItem(data);
-
+        sumBackupTest = 0;
         for(int i=0;i<INDICATOR_MAX;i++){
             sumTest[i] = 0f;
         }
@@ -224,7 +232,9 @@ public class DustBinModel {
         sheet.addCell(label);
         label = new Label(6,0,"测试5");
         sheet.addCell(label);
-        label = new Label(7,0,"时间戳");
+        label = new Label(7,0,"备用");
+        sheet.addCell(label);
+        label = new Label(8,0,"时间戳");
         sheet.addCell(label);
     }
 
@@ -243,7 +253,9 @@ public class DustBinModel {
                 label = new Label(j+2,row,tools.float2String3(data.getTest()[j]));
                 sheet.addCell(label);
             }
-            label = new Label(7,row,String.valueOf(data.getDate()));
+            label = new Label(7,row,tools.float2String3(data.getBackup()));
+            sheet.addCell(label);
+            label = new Label(8,row,String.valueOf(data.getDate()));
             sheet.addCell(label);
             row++;
         }

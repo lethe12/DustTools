@@ -24,10 +24,10 @@ public class ComManager {
     private  SocketCom[] socketCom = new SocketCom[5];
 
     private ComManager(){
-        coms[0] = new COM(0);
-        coms[1] = new COM(1);
-        coms[2] = new COM(2);
-        coms[3] = new COM(3);
+        coms[0] = new COM(0,9600);
+        coms[1] = new COM(1,9600);
+        coms[2] = new COM(2,9600);
+        coms[3] = new COM(3,57600);
     }
 
     public boolean readRegister(int comNumber,byte id,int reg,int num,ReadModBusRegistersListener listener){
@@ -42,6 +42,22 @@ public class ComManager {
         }else{
             return false;
         }
+    }
+
+    public boolean readIO(int comNumber,byte id,int reg,ReadModBusRegistersListener listener){
+        if(comNumber <=3 ){
+           coms[comNumber].readIO(id,reg,listener);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean writeIO(int comNumber,byte id,int reg,int value){
+        if(comNumber <=3 ){
+            coms[comNumber].writeIO(id,reg,value);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -203,8 +219,8 @@ public class ComManager {
          * @param
          * @param
          */
-        public COM(int num) {
-            super(num, 9600, 0);
+        public COM(int num,int baudRate) {
+            super(num, baudRate, 0);
         }
 
         @Override
@@ -230,7 +246,37 @@ public class ComManager {
 
         }
 
+        /**
+         * 使用05指令强制对应IO口为On或Off状态
+         * @param address 地址
+         * @param reg 寄存器 0500~0505 Y0~Y5
+         * @param value FF00为On 0000为Off
+         */
+        public void writeIO(byte address,int reg,int value){
+            byte [] cmd = {0x01,0x05,0x00,0x00,0x00,0x01,0x0d,0x0a},buff;
+            cmd[0] = address;
+            buff = tools.int2byte(reg);
+            cmd[2] = buff[0];
+            cmd[3] = buff[1];
+            buff = tools.int2byte(value);
+            cmd[4] = buff[0];
+            cmd[5] = buff[1];
+            tools.addCrc16(cmd,0,6);
+            this.id = address;
+            addSendBuff(cmd,WRITE_REGISTER);
+        }
 
+        public void readIO(byte address,int reg,ReadModBusRegistersListener listener){
+            this.listener = listener;
+            byte [] cmd = {0x01,0x02,0x00,0x00,0x00,0x01,0x0d,0x0a},buff;
+            cmd[0] = address;
+            buff = tools.int2byte(reg);
+            cmd[2] = buff[0];
+            cmd[3] = buff[1];
+            tools.addCrc16(cmd,0,6);
+            this.id = address;
+            addSendBuff(cmd,READ_REGISTER);
+        }
 
         /**
          * 写一个寄存器

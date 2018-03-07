@@ -8,7 +8,7 @@ import com.tools;
  */
 
 public class ComparativeDustData {
-    private float reference;
+    private float reference,backup;
     private float [] test = new float[DustBinModel.INDICATOR_MAX];
     private long date;
     private String dateString;
@@ -21,6 +21,9 @@ public class ComparativeDustData {
         return date;
     }
 
+    public float getBackup() {
+        return backup;
+    }
 
     public String getDateString() {
         return dateString;
@@ -30,9 +33,10 @@ public class ComparativeDustData {
         return test;
     }
 
-    public ComparativeDustData(long date,float reference,float [] data){
+    public ComparativeDustData(long date,float reference,float [] data,float backup){
         this.date = date;
         this.reference = reference;
+        this.backup = backup;
         this.dateString = tools.timestamp2stringWithSecond(date);
         if(data.length == DustBinModel.INDICATOR_MAX){
             System.arraycopy(data,0,test,0,DustBinModel.INDICATOR_MAX-1);
