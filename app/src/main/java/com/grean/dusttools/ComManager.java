@@ -30,10 +30,36 @@ public class ComManager {
         coms[3] = new COM(3,57600);
     }
 
+    public boolean writeRegister(int comNumber,byte id,int reg,int value){
+        if(isNumOk(comNumber)) {
+            if (comNumber <= 3) {
+                coms[comNumber].writeRegister(id,reg,value);
+            }else{
+                socketCom[comNumber-4].writeRegister(id,reg,value);
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public boolean writeRegisters(int comNumber,byte id,int reg,int value[]){
+        if(isNumOk(comNumber)) {
+            if (comNumber <= 3) {
+                coms[comNumber].writeRegisters(id,reg,value);
+            }else{
+                socketCom[comNumber-4].writeRegisters(id,reg,value);
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public boolean readRegister(int comNumber,byte id,int reg,int num,ReadModBusRegistersListener listener){
         if(isNumOk(comNumber)){
             if(comNumber<=3){
-                //Log.d(tag,"read reg");
+                Log.d(tag,"read reg");
                 coms[comNumber].readRegisters(id,reg,num,listener);
                 return true;
             }else{
@@ -188,6 +214,33 @@ public class ComManager {
         }
 
         /**
+         * 使用16指令 连续写寄存器
+         * @param address
+         * @param reg
+         * @param value
+         */
+        public void writeRegisters(byte address,int reg,int value[]){
+            byte [] cmd = new byte[value.length*2+9],buff;
+            cmd[0] = address;
+            cmd[1] = 0x10;
+            buff = tools.int2byte(reg);
+            cmd[2] = buff[0];
+            cmd[3] = buff[1];
+            buff = tools.int2byte(value.length);
+            cmd[4] = buff[0];
+            cmd[5] = buff[1];
+            cmd[6] = (byte) (value.length*2);
+            for(int i=0;i<value.length;i++){
+                buff = tools.int2byte(value[i]);
+                cmd[7+i*2] = buff[0];
+                cmd[8+i*2]=buff[1];
+            }
+            tools.addCrc16(cmd,0,value.length*2+7);
+            this.id = address;
+            addSendBuff(cmd,WRITE_REGISTER);
+        }
+
+        /**
          *
          * @param reg 起始寄存器地址
          * @param readNum 需要读取的寄存器数目
@@ -238,7 +291,7 @@ public class ComManager {
                     listener.onComplete(rec,size);
                 }
             }
-
+            //Log.d(tag,"RS232"+String.valueOf(state)+":"+tools.bytesToHexString(rec,size));
         }
 
         @Override
@@ -297,7 +350,33 @@ public class ComManager {
             this.id = address;
             addSendBuff(cmd,WRITE_REGISTER);
         }
-
+        /**
+         * 使用16指令 连续写寄存器
+         * @param address
+         * @param reg
+         * @param value
+         */
+        public void writeRegisters(byte address,int reg,int value[]){
+            byte [] cmd = new byte[value.length*2+9],buff;
+            cmd[0] = address;
+            cmd[1] = 0x10;
+            buff = tools.int2byte(reg);
+            cmd[2] = buff[0];
+            cmd[3] = buff[1];
+            buff = tools.int2byte(value.length);
+            cmd[4] = buff[0];
+            cmd[5] = buff[1];
+            cmd[6] = (byte) (value.length*2);
+            for(int i=0;i<value.length;i++){
+                buff = tools.int2byte(value[i]);
+                cmd[7+i*2] = buff[0];
+                cmd[8+i*2]=buff[1];
+            }
+            tools.addCrc16(cmd,0,value.length*2+7);
+            this.id = address;
+            //Log.d(tag,tools.bytesToHexString(cmd,cmd.length));
+            addSendBuff(cmd,WRITE_REGISTER);
+        }
         /**
          *
          * @param reg 起始寄存器地址
@@ -334,7 +413,7 @@ public class ComManager {
             return false;
         }
 
-        if(!((buff[1]==0x03)||(buff[1]==0x06))){//只接受03和06指令
+        if(!((buff[1]==0x03)||(buff[1]==0x06)||(buff[1]==0x02)||(buff[1]==0x05))){//只接受03、06、02、05指令
             return false;
         }
 

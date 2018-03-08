@@ -5,7 +5,111 @@
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="COM0:步进电机驱动器" />
+        android:text="COM0:步进电机驱动器，1600 Pu/rve" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="auto"
+        android:focusableInTouchMode="true">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="启动速度" />
+
+        <EditText
+            android:id="@+id/etStepMotorStartingSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@+id/textView2"
+            android:ems="2"
+            android:inputType="number" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/etStepMotorStartingSpeed"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/etStepMotorStartingSpeed"
+            android:text="r/min 最大速度" />
+
+        <EditText
+            android:id="@+id/etMaxSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/etStepMotorStartingSpeed"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/textView3"
+            android:ems="3"
+            android:inputType="number" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/etMaxSpeed"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/etMaxSpeed"
+            android:text="r/min 步数" />
+
+        <EditText
+            android:id="@+id/etPlus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/etMaxSpeed"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/textView4"
+            android:ems="6"
+            android:inputType="numberSigned" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/etPlus"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/etPlus"
+            android:text="plus" />
+
+        <Button
+            android:id="@+id/btnStepMotorSaveSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/etPlus"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/textView5"
+            android:text="保存配置" />
+
+        <Button
+            android:id="@+id/btnStepMotorMove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/btnStepMotorSaveSetting"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/btnStepMotorSaveSetting"
+            android:text="启动电机" />
+
+        <TextView
+            android:id="@+id/tvRemaindTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/textView2"
+            android:layout_below="@+id/etStepMotorStartingSpeed"
+            android:layout_marginTop="30dp"
+            android:text="未连接驱动器" />
+
+    </RelativeLayout>
+
 </LinearLayout>

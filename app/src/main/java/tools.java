@@ -415,6 +415,10 @@ import android.annotation.SuppressLint;
 	public static int byte2int(byte[] data,int offset){
 		return ((data[offset] &0x00ff)<<8)| (data[offset+1]&0x00ff)&0xffff;
 	}
+
+	public static int byte2IntWith4(byte[]data,int offset){
+        return ((data[offset]&0x000000ff)<<24)|((data[offset+1]&0x000000ff)<<16)|((data[offset+2]&0x000000ff)<<8)|((data[offset+3]&0x000000ff));
+    }
 	
 	public static byte[] int2byte(int data){
 		byte [] temp = {0x00,0x00};
