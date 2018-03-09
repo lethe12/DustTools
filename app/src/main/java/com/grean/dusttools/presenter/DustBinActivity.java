@@ -179,7 +179,7 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
         }
     }
 
-    class LeftAdapter extends BaseAdapter {
+    private class LeftAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {

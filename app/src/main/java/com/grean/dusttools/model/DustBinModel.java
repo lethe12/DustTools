@@ -240,7 +240,7 @@ public class DustBinModel {
 
     private void addOneSheet(WritableSheet sheet,List<ComparativeDustData> dataList,int index,int max)throws WriteException{
         int row=1;
-        List<String> element;
+        //List<String> element;
         ComparativeDustData data;
         for(int i=index;i<max;i++){
             Label label;

@@ -23,6 +23,7 @@ import com.grean.dusttools.R;
  *
  */
 public class ItemFragment extends Fragment {
+    public static final int MAX_LINE = 7;
     private static final String tag = "ItemFragment";
     private EditText et_1,et_2,et_3,et_4,et_5,et_6,et_7;
     private ArrayList<EditText>list ;
@@ -67,7 +68,7 @@ public class ItemFragment extends Fragment {
         list.add( et_4);
         list.add( et_5);
         list.add( et_6);
-        Log.d(tag,"init");
+        //Log.d(tag,"init");
         for(int i=0;i<listString.size();i++){
             switch (i){
                 case 0:

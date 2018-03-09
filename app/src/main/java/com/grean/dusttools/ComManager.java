@@ -59,7 +59,7 @@ public class ComManager {
     public boolean readRegister(int comNumber,byte id,int reg,int num,ReadModBusRegistersListener listener){
         if(isNumOk(comNumber)){
             if(comNumber<=3){
-                Log.d(tag,"read reg");
+                //Log.d(tag,"read reg");
                 coms[comNumber].readRegisters(id,reg,num,listener);
                 return true;
             }else{

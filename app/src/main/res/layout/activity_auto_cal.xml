@@ -5,7 +5,290 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/textView8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="COM0:设备1;COM1:设备2;COM2:设备3;COM3:设备4" />
+        android:text="COM0:设备1;COM1:设备2;COM2:设备3;COM3:设备4  注意:正在测试中不得退出该界面，如需退出，请先停止连续测试" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="auto"
+        android:focusableInTouchMode="true">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设备1 电机步数:" />
+
+        <EditText
+            android:id="@+id/etMotor1Steps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/textView"
+            android:ems="4"
+            android:inputType="number"
+            android:text="1400" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/etMotor1Steps"
+            android:text="时间:" />
+
+        <EditText
+            android:id="@+id/etMotor1Time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/textView7"
+            android:ems="2"
+            android:inputType="number"
+            android:text="14" />
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView7"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/etMotor1Time"
+            android:text="S" />
+
+        <Switch
+            android:id="@+id/swCountinueTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textView"
+            android:layout_marginTop="30dp"
+            android:text="连续测试" />
+
+        <TextView
+            android:id="@+id/tvMainBoard1RealTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="25dp"
+            android:layout_toEndOf="@+id/textView9"
+            android:text="当前状态:" />
+
+        <Button
+            android:id="@+id/btnSaveAutoCalToFile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/etMotor1Steps"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/swCountinueTest"
+            android:elevation="0dp"
+            android:text="保存结果" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+
+
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="时间" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="50dp"
+            android:background="#cccccc" />
+
+        <LinearLayout
+            android:id="@+id/lin_header_content"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="4"
+            android:orientation="vertical">
+
+            <com.view.SyncHorizontalScrollView
+                android:id="@+id/header_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:overScrollMode="never"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/lin_year_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="设备1" />
+
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="50dp"
+                        android:background="#cccccc" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="设备2" />
+
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="50dp"
+                        android:background="#cccccc" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="设备3" />
+
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="50dp"
+                        android:background="#cccccc" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="设备4" />
+
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="50dp"
+                        android:background="#cccccc" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="备用" />
+
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="50dp"
+                        android:background="#cccccc" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="备用" />
+
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="50dp"
+                        android:background="#cccccc" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="备用" />
+
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="50dp"
+                        android:background="#cccccc" />
+                </LinearLayout>
+            </com.view.SyncHorizontalScrollView>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#cccccc" />
+
+    <ScrollView
+        android:id="@+id/scroll_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal">
+
+            <com.view.NoscrollListView
+                android:id="@+id/lv_left"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:divider="@null"
+                android:overScrollMode="never"
+                android:scrollbars="none" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="match_parent"
+                android:background="#cccccc" />
+
+            <LinearLayout
+                android:id="@+id/lin_data_content"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:orientation="vertical">
+
+                <com.view.SyncHorizontalScrollView
+                    android:id="@+id/data_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+
+                    <com.view.NoscrollLinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:overScrollMode="never"
+                        android:scrollbars="none">
+
+                        <LinearLayout
+                            android:id="@+id/lv_data"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical" />
+                    </com.view.NoscrollLinearLayout>
+                </com.view.SyncHorizontalScrollView>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>
