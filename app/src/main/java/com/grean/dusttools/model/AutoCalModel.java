@@ -2,6 +2,7 @@ package com.grean.dusttools.model;
 
 import android.util.Log;
 
+import com.SaveDataToExcel;
 import com.grean.dusttools.devices.DustMainBoard;
 import com.grean.dusttools.devices.DustMainBoardCalInfoFormat;
 import com.grean.dusttools.devices.OnMainBoardListener;
@@ -15,7 +16,7 @@ import java.util.List;
  * Created by weifeng on 2018/3/9.
  */
 
-public class AutoCalModel {
+public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
     private static final String tag = "AutoCalModel";
     public static final int MAX=4;
     private OnAutoCalListener listener;
@@ -24,6 +25,7 @@ public class AutoCalModel {
     private AutoCalThread autoCalThread;
     private List<DustMainBoardCalInfoFormat> list = new ArrayList<>();
     private CalListener[] calListeners = new CalListener[MAX];
+    private SaveDataToExcel excel;
 
     public AutoCalModel(OnAutoCalListener listener){
         this.listener = listener;
@@ -36,11 +38,25 @@ public class AutoCalModel {
     }
 
     public String getDate(int position){
-        return String.valueOf(position);
+        return list.get(position).getDateString();
     }
 
     public void stopRun(){
         run = false;
+    }
+
+    public boolean saveDataToFile(){
+        excel = new SaveDataToExcel("自动校准老化",list.size(),5);
+        excel.setOnWriteContentListener(this);
+        return excel.exportData2File();
+    }
+
+    public String getFileName(){
+        if(excel!=null){
+            return excel.getFileName();
+        }else{
+            return " ";
+        }
     }
 
     public void startAutoCal(){
@@ -49,12 +65,40 @@ public class AutoCalModel {
         }
     }
 
-    public boolean saveDataToFile(){
-        return true;
+
+    @Override
+    public String getTitleName(int line) {
+        switch (line){
+            case 0:
+                return "时间";
+            case 1:
+                return "设备1";
+            case 2:
+                return "设备2";
+            case 3:
+                return "设备3";
+            case 4:
+                return "设备4";
+            default:
+                return "-";
+        }
     }
 
-    public String getFileName(){
-        return "-";
+    @Override
+    public String getContent(int line, int row) {
+        DustMainBoardCalInfoFormat format = list.get(row);
+        switch (line){
+            case 0:
+                return format.getDateString();
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                return format.getResult(line-1);
+            default:
+                return "-";
+
+        }
     }
 
     private class CalListener implements OnMainBoardListener{
@@ -133,7 +177,7 @@ public class AutoCalModel {
                 delay(1);
                 for(int i=0;i<MAX;i++){
                     span[i] = calListeners[i].isSpanOk();
-                    if(bg[i]){
+                    if(span[i]){
                         states[i] = "校跨成功";
                     }else{
                         states[i] = "校跨失败";
@@ -153,6 +197,10 @@ public class AutoCalModel {
                 mainBoard.ctrl.startDustIndicator();
                 for(int i=0;i<MAX;i++){
                     states[i] = "等待下次测试";
+                }
+                for(int i=0;i<MAX;i++){
+                    bg[i] = false;
+                    span[i] = false;
                 }
                 delay(20);
             }

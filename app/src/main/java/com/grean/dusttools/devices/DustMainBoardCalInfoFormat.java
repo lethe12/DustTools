@@ -1,5 +1,7 @@
 package com.grean.dusttools.devices;
 
+import android.util.Log;
+
 import com.tools;
 
 /**
@@ -7,6 +9,7 @@ import com.tools;
  */
 
 public class DustMainBoardCalInfoFormat {
+
     private boolean[] bg,span;
     private long date;
 
@@ -15,7 +18,8 @@ public class DustMainBoardCalInfoFormat {
         this.bg = new boolean[bg.length];
         System.arraycopy(bg,0,this.bg,0,bg.length);
         this.span = new boolean[span.length];
-        System.arraycopy(span,0,this.bg,0,span.length);
+        System.arraycopy(span,0,this.span,0,span.length);
+        //Log.d("CalInfoFormat",String.valueOf(bg[0])+String.valueOf(span[0]));
     }
 
     public String getDateString(){
