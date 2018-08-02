@@ -87,7 +87,7 @@ public class StepMotorTesterActivity extends Activity implements View.OnClickLis
                 dialogFragment.setCancelable(false);
                 dialogFragment.setOnHandleListener(this);
                 dialogFragment.show(getFragmentManager(),"ProcessDialogFragment");
-                model.setStepMotorMove((int) format.getTime()+2);
+                model.setStepMotorMove((int) format.getTime()+1);
                 break;
             default:
 

@@ -93,14 +93,12 @@ public class MultiTemperatureTester extends Activity implements OnMultiTemperatu
         mLeft.setAdapter(mLeftAdapter);
 
         model = new MultiTemperatureModel(this);
-
     }
 
-
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
         model.stopRun();
-        super.onDestroy();
+        super.onStop();
     }
 
     @Override

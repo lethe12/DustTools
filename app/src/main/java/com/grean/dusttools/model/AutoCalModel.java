@@ -21,7 +21,7 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
     public static final int MAX=4;
     private OnAutoCalListener listener;
     private boolean run;
-    private DustMainBoard mainBoard;
+    private DustMainBoard mainBoard,device1,device2,device3;
     private AutoCalThread autoCalThread;
     private List<DustMainBoardCalInfoFormat> list = new ArrayList<>();
     private CalListener[] calListeners = new CalListener[MAX];
@@ -34,7 +34,10 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
         calListeners[1] = new CalListener(1);
         calListeners[2] = new CalListener(2);
         calListeners[3] = new CalListener(3);
-        mainBoard = new DustMainBoard(0,1400,14,calListeners[0]);
+        mainBoard = new DustMainBoard(0,1400,20,calListeners[0]);
+        device1 = new DustMainBoard(1,1400,20,calListeners[1]);
+        device2 = new DustMainBoard(2,1400,20,calListeners[2]);
+        device3 = new DustMainBoard(3,1400,20,calListeners[3]);
     }
 
     public String getDate(int position){
@@ -59,8 +62,18 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
         }
     }
 
-    public void startAutoCal(){
+    public void startAutoCal(String stepString,String timeString){
         if(!run){
+            int step = Integer.valueOf(stepString);
+            int time = Integer.valueOf(timeString);
+            mainBoard.setMotorRounds(step);
+            mainBoard.setMotorTime(time);
+            device1.setMotorRounds(step);
+            device1.setMotorTime(time);
+            device2.setMotorRounds(step);
+            device2.setMotorTime(time);
+            device3.setMotorRounds(step);
+            device3.setMotorTime(time);
             autoCalThread.start();
         }
     }
@@ -103,7 +116,9 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
 
     private class CalListener implements OnMainBoardListener{
         private int num;
-        private boolean bgOk,spanOk;
+        private boolean bgOk,spanOk,spanPos,measurePos;
+
+
 
         public CalListener(int num){
             this.num = num;
@@ -121,6 +136,14 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
             return spanOk;
         }
 
+        public boolean isSpanPos() {
+            return spanPos;
+        }
+
+        public boolean isMeasurePos() {
+            return measurePos;
+        }
+
         @Override
         public void onBgResult(boolean key) {
             bgOk = key;
@@ -129,6 +152,12 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
         @Override
         public void onSpanResult(boolean key) {
             spanOk = key;
+        }
+
+        @Override
+        public void onPos(boolean span, boolean measure) {
+            spanPos = span;
+            measurePos = measure;
         }
     }
 
@@ -141,6 +170,9 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
             while(run&&(!interrupted())){
                 //停止粉尘仪
                 mainBoard.ctrl.stopDustIndicator();
+                device1.ctrl.stopDustIndicator();
+                device2.ctrl.stopDustIndicator();
+                device3.ctrl.stopDustIndicator();
                 for(int i=0;i<MAX;i++){
                     states[i] = "停止测量,开始校准";
                 }
@@ -148,15 +180,24 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
                 listener.onRealTimeState(states);
                 delay(1);
                 mainBoard.ctrl.ctrlRelay(true);
-                delay(10);
+                device1.ctrl.ctrlRelay(true);
+                device3.ctrl.ctrlRelay(true);
+                device2.ctrl.ctrlRelay(true);
+                delay(10);//等待管阀
                 for(int i=0;i<MAX;i++){
                     states[i] = "正在校零";
                 }
                 listener.onRealTimeState(states);
                 mainBoard.ctrl.startDustIndicatorBg();
-                delay(100);
+                device1.ctrl.startDustIndicatorBg();
+                device2.ctrl.startDustIndicatorBg();
+                device3.ctrl.startDustIndicatorBg();
+                delay(100);//等待校零点
                 mainBoard.ctrl.readDustIndicatorBgResult();
-                delay(1);
+                device1.ctrl.readDustIndicatorBgResult();
+                device2.ctrl.readDustIndicatorBgResult();
+                device3.ctrl.readDustIndicatorBgResult();
+                delay(10);
                 for(int i=0;i<MAX;i++){
                     bg[i] = calListeners[i].isBgOk();
                     if(bg[i]){
@@ -168,12 +209,24 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
                 }
                 listener.onRealTimeState(states);
                 mainBoard.ctrl.stopDustIndicatorBg();
+                device1.ctrl.stopDustIndicatorBg();
+                device2.ctrl.stopDustIndicatorBg();
+                device3.ctrl.stopDustIndicatorBg();
                 delay(1);
                 mainBoard.ctrl.setMotorSetting(DustMainBoard.MOTOR_FORWARD);
-                delay(mainBoard.getMotorTime()/100+2);
+                device1.ctrl.setMotorSetting(DustMainBoard.MOTOR_FORWARD);
+                device2.ctrl.setMotorSetting(DustMainBoard.MOTOR_FORWARD);
+                device3.ctrl.setMotorSetting(DustMainBoard.MOTOR_FORWARD);
+                delay(mainBoard.getMotorTime()/100+2);//等待散光板到位
                 mainBoard.ctrl.startDustIndicatorSpan();
-                delay(80);
+                device1.ctrl.startDustIndicatorSpan();
+                device2.ctrl.startDustIndicatorSpan();
+                device3.ctrl.startDustIndicatorSpan();
+                delay(80);//等待校跨
                 mainBoard.ctrl.readDustIndicatorSpanResult();
+                device1.ctrl.readDustIndicatorSpanResult();
+                device2.ctrl.readDustIndicatorSpanResult();
+                device3.ctrl.readDustIndicatorSpanResult();
                 delay(1);
                 for(int i=0;i<MAX;i++){
                     span[i] = calListeners[i].isSpanOk();
@@ -186,12 +239,31 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
                 }
                 listener.onRealTimeState(states);
                 mainBoard.ctrl.stopDustIndicatorSpan();
+                device1.ctrl.stopDustIndicatorSpan();
+                device2.ctrl.stopDustIndicatorSpan();
+                device3.ctrl.stopDustIndicatorSpan();
                 delay(1);
                 mainBoard.ctrl.setMotorSetting(DustMainBoard.MOTOR_BACK);
+                device1.ctrl.setMotorSetting(DustMainBoard.MOTOR_BACK);
+                device2.ctrl.setMotorSetting(DustMainBoard.MOTOR_BACK);
+                device3.ctrl.setMotorSetting(DustMainBoard.MOTOR_BACK);
                 delay(1);
                 mainBoard.ctrl.ctrlRelay(false);
+                device1.ctrl.ctrlRelay(false);
+                device2.ctrl.ctrlRelay(false);
+                device3.ctrl.ctrlRelay(false);
                 delay(mainBoard.getMotorTime()/100+1);
-                DustMainBoardCalInfoFormat format = new DustMainBoardCalInfoFormat(tools.nowtime2timestamp(),bg,span);
+                mainBoard.ctrl.readMainBoardState();
+                device1.ctrl.readMainBoardState();
+                device2.ctrl.readMainBoardState();
+                device3.ctrl.readMainBoardState();
+                delay(1);
+                boolean[] spanPos = new boolean[4],measurePos = new boolean[4];
+                for(int i=0;i<4;i++){
+                    spanPos[i] = calListeners[i].isSpanPos();
+                    measurePos[i] = calListeners[i].isMeasurePos();
+                }
+                DustMainBoardCalInfoFormat format = new DustMainBoardCalInfoFormat(tools.nowtime2timestamp(),bg,span,spanPos,measurePos);
                 list.add(format);
                 listener.onInsertItem(format);
                 mainBoard.ctrl.startDustIndicator();

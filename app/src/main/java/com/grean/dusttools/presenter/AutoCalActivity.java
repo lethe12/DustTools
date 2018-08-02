@@ -156,7 +156,7 @@ public class AutoCalActivity extends Activity implements OnAutoCalListener,View.
                     etMotor1Time.setEnabled(false);
                     etMotor1Steps.setEnabled(false);
                     backEnable = false;
-                    model.startAutoCal();
+                    model.startAutoCal(etMotor1Steps.getText().toString(),etMotor1Time.getText().toString());
                 }else{//停止
                     waitingFragment = new WaitingFragment();
                     waitingFragment.show(getFragmentManager(),"WaitingFragment");

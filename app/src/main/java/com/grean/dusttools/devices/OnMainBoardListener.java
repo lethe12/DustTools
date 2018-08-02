@@ -7,4 +7,5 @@ package com.grean.dusttools.devices;
 public interface OnMainBoardListener {
     void onBgResult(boolean key);
     void onSpanResult(boolean key);
+    void onPos(boolean span,boolean measure);
 }

@@ -161,10 +161,15 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onStop() {
+        /*if(isFinishing()) {
+            model.stopScan();
+        }*/
         model.stopScan();
-        super.onDestroy();
+        super.onStop();
     }
+
+
 
     @Override
     public void onClick(View v) {

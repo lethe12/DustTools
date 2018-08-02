@@ -77,6 +77,11 @@ public class DustMainBoard {
             ComManager.getInstance().readRegister(comNumber,(byte)0xdd,0x0009,0x01,this);
         }
 
+        public void readMainBoardState(){
+            state = 3;
+            ComManager.getInstance().readRegister(comNumber, (byte) 0x55,0x2001,0x1f,this);
+        }
+
         public void ctrlRelay(boolean key){
             if(key){
                 ComManager.getInstance().writeRegister(comNumber,(byte)0x55,0x1001,0x01);
@@ -110,8 +115,15 @@ public class DustMainBoard {
                 }else{
                     listener.onSpanResult(false);
                 }
-            }else{
-
+            }else if(state == 3){//查询参数
+                boolean span = false,measure = false;
+                if(value[37]!=0x00){
+                    span = true;
+                }
+                if(value[39]!=0x00){
+                    measure = true;
+                }
+                listener.onPos(span,measure);
             }
         }
     }
