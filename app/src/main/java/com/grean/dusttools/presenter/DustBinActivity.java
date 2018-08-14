@@ -8,16 +8,21 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.grean.dusttools.R;
+import com.grean.dusttools.SystemConfig;
 import com.grean.dusttools.devices.ComparativeDustData;
 import com.grean.dusttools.model.DustBinModel;
 import com.tools;
@@ -43,7 +48,15 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
     private SyncHorizontalScrollView mDataHorizontal;
     private List<String> mListData;
     private int index=0;
+    private boolean backEnable = true;//返回键使能
     //private Button btnSave2File;
+    private Switch swBrush,swDustGenerate;
+    private EditText etScrewSpeed,etScrewPath,etParameter;
+    private TextView realTime,tvDustInfo;
+    private String[] realTimeString = new String[DustBinModel.INDICATOR_MAX];
+
+    private DustBinModel model;
+    private SystemConfig config;
 
     private ComparativeDustData dustData;
 
@@ -86,18 +99,18 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
         }
     };
 
-    private TextView realTime;
-    private String[] realTimeString = new String[DustBinModel.INDICATOR_MAX];
 
-    private DustBinModel model;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dust_bin);
         initView();
-        model = new DustBinModel(this);
-
+        config = new SystemConfig(this);
+        model = new DustBinModel(this,config);
+        etParameter.setText(String.valueOf(model.getDustParameter()));
+        etScrewSpeed.setText(String.valueOf(model.getScrewSpeed()));
+        etScrewPath.setText(String.valueOf(model.getScrewPath()));
         /*FragmentManager manager =getFragmentManager();
         FragmentTransaction tx = manager.beginTransaction();
         fragments= new ArrayList<>();
@@ -114,6 +127,15 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
 
     private void initView(){
         realTime = findViewById(R.id.tvDustBinRealtime);
+        tvDustInfo = findViewById(R.id.tvDustInfo);
+        etParameter = findViewById(R.id.etDustParameter);
+        etScrewPath = findViewById(R.id.etScrewPath);
+        etScrewSpeed = findViewById(R.id.etScrewSpeed);
+        findViewById(R.id.swBrush).setOnClickListener(this);
+        findViewById(R.id.swDustGenerate).setOnClickListener(this);
+        findViewById(R.id.btnSaveParaMeter).setOnClickListener(this);
+        swBrush = findViewById(R.id.swBrush);
+        swDustGenerate = findViewById(R.id.swDustGenerate);
 
         mLeft = (NoscrollListView) findViewById(R.id.lv_left);
         mDataHorizontal = (SyncHorizontalScrollView) findViewById(R.id.data_horizontal);
@@ -165,11 +187,19 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
         /*if(isFinishing()) {
             model.stopScan();
         }*/
+        model.onStopDustGenerate();
         model.stopScan();
         super.onStop();
     }
 
-
+    @Override
+    public void onBackPressed() {
+        if (backEnable) {
+            super.onBackPressed();
+        }else{
+            Toast.makeText(this,"发尘中，请勿退出!",Toast.LENGTH_SHORT).show();
+        }
+    }
 
     @Override
     public void onClick(View v) {
@@ -180,6 +210,56 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
                 }else{
                     Toast.makeText(this,"导出失败",Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case R.id.btnSaveParaMeter:
+                if(Float.valueOf(etScrewSpeed.getText().toString()) > 20f){
+                    Toast.makeText(this,"设置速度超范围", Toast.LENGTH_SHORT).show();
+                    etScrewSpeed.setError("最大值 20");
+                    break;
+                }
+                if((Integer.valueOf(etScrewPath.getText().toString()) > 25)||(Integer.valueOf(etScrewPath.getText().toString()) < -25)){
+                    Toast.makeText(this,"设置速度超范围", Toast.LENGTH_SHORT).show();
+                    etScrewPath.setError("最大行程 25mm");
+                    break;
+                }
+
+                model.setDustGenerateSetting(Float.valueOf(etScrewSpeed.getText().toString()),
+                        Integer.valueOf(etScrewPath.getText().toString()),Float.valueOf(etParameter.getText().toString()));
+                tvDustInfo.setText(model.getDustGenerateInfo());
+                break;
+            case R.id.swBrush:
+                model.switchBrush(swBrush.isChecked());
+                break;
+            case R.id.swDustGenerate:
+                if(swDustGenerate.isChecked()){
+                    if(Float.valueOf(etScrewSpeed.getText().toString()) > 20f){
+                        Toast.makeText(this,"设置速度超范围", Toast.LENGTH_SHORT).show();
+                        etScrewSpeed.setError("最大值 20");
+                        break;
+                    }
+                    if((Integer.valueOf(etScrewPath.getText().toString()) >= 25)||(Integer.valueOf(etScrewPath.getText().toString()) <= -25)){
+                        Toast.makeText(this,"设置速度超范围", Toast.LENGTH_SHORT).show();
+                        etScrewPath.setError("最大行程 25mm");
+                        break;
+                    }
+
+                    etScrewPath.setEnabled(false);
+                    etScrewSpeed.setEnabled(false);
+                    etParameter.setEnabled(false);
+                    backEnable = true;
+                    model.startDustGenerate(Float.valueOf(etScrewSpeed.getText().toString()),
+                            Integer.valueOf(etScrewPath.getText().toString()),Float.valueOf(etParameter.getText().toString()));
+                    tvDustInfo.setText(model.getDustGenerateInfo());
+
+                }else{
+                    etScrewPath.setEnabled(true);
+                    etScrewSpeed.setEnabled(true);
+                    etParameter.setEnabled(true);
+                    model.onStopDustGenerate();
+                    backEnable = false;
+                }
+                break;
+            default:
                 break;
         }
     }

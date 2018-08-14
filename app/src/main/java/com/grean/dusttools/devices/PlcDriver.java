@@ -10,12 +10,16 @@ import com.grean.dusttools.ReadModBusRegistersListener;
 
 public class PlcDriver {
     private OnReadIoListener listener;
+    private CtrlIo io;
 
     public PlcDriver(int comNumber,OnReadIoListener listener){
         this.listener = listener;
+        io= new CtrlIo(comNumber);
     }
 
-
+    public void setIo(int num,boolean key){
+        io.writeIo(num,key);
+    }
 
     private class CtrlIo implements ReadModBusRegistersListener{
         private int comNumber;

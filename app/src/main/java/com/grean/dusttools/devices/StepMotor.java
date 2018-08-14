@@ -16,6 +16,29 @@ public class StepMotor {
     private OnStepMotorDriverSettingListener listener;
     private Driver driver;
     private StepMotorDriverSettingFormat format;
+    private int allSteps = 0,subdivide = 1000;//总步数 细分
+    //步进电机减速器 1:100 同步带 1:3 螺杆 2mm/r 即 150r/mm
+
+    public void setDustGeneration(float speed,int path){
+        if(format!=null) {
+            int max = (int) (speed*150f);
+            subdivide = getSubdivide(speed);
+            allSteps = path*150*subdivide;
+            setSubdivide(subdivide);
+            format.setStartingSpeed(2);
+            format.setMaxSpeed(max);
+            format.setPlus(allSteps);
+            driver.writeSetting();
+        }
+    }
+
+    private int getSubdivide(float speed){
+        if(speed > 0.1){
+            return 200;
+        }else{
+            return 1000;
+        }
+    }
 
     public StepMotor(int comNumber,OnStepMotorDriverSettingListener listener){
         driver = new Driver(comNumber);
@@ -34,6 +57,67 @@ public class StepMotor {
             format.setPlus(plus);
             driver.writeSetting();
         }
+    }
+
+    /**
+     * 设置细分
+     * @param subdivide
+     */
+    public void setSubdivide(int subdivide){
+        byte sub=0x03;
+        switch (subdivide){
+            case 200:
+                sub=0;
+                break;
+            case 400:
+                sub=1;
+                break;
+            case 800:
+                sub = 2;
+                break;
+            case 1600:
+                sub = 3;
+                break;
+            case 3200:
+                sub = 4;
+                break;
+            case 6400:
+                sub = 5;
+                break;
+            case 12800:
+                sub = 6;
+                break;
+            case 25600:
+                sub = 7;
+                break;
+            case 1000:
+                sub = 8;
+                break;
+            case 2000:
+                sub = 9;
+                break;
+            case 4000:
+                sub = 10;
+                break;
+            case 5000:
+                sub = 11;
+                break;
+            case 8000:
+                sub = 12;
+                break;
+            case 10000:
+                sub = 13;
+                break;
+            case 20000:
+                sub = 14;
+                break;
+            case 40000:
+                sub = 15;
+                break;
+            default:
+                break;
+        }
+        driver.setSubdivide(sub);
     }
 
     public void stop(){
@@ -81,6 +165,10 @@ public class StepMotor {
 
         protected void scram(){
             ComManager.getInstance().writeRegister(comNumber,(byte)0x01,0x0028,0x01);
+        }
+
+        protected void setSubdivide(byte subdivide){
+            ComManager.getInstance().writeRegister(comNumber, (byte) 0x01,0x0011,subdivide);
         }
 
         @Override

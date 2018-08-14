@@ -2,10 +2,16 @@ package com.grean.dusttools.model;
 
 import android.util.Log;
 
+import com.grean.dusttools.SystemConfig;
 import com.grean.dusttools.devices.ComparativeDustData;
 import com.grean.dusttools.devices.LvlinDustIndicator;
 import com.grean.dusttools.devices.OnReadDustResultListener;
+import com.grean.dusttools.devices.OnReadIoListener;
+import com.grean.dusttools.devices.OnStepMotorDriverSettingListener;
+import com.grean.dusttools.devices.PlcDriver;
 import com.grean.dusttools.devices.SibataDustIndicator;
+import com.grean.dusttools.devices.StepMotor;
+import com.grean.dusttools.devices.StepMotorDriverSettingFormat;
 import com.grean.dusttools.devices.ZetianDustIndicator;
 import com.grean.dusttools.presenter.DustBinScanResultListener;
 import com.tools;
@@ -28,7 +34,7 @@ import jxl.write.biff.RowsExceededException;
  * Created by weifeng on 2018/2/27.
  */
 
-public class DustBinModel {
+public class DustBinModel implements OnReadIoListener ,OnStepMotorDriverSettingListener {
     public static final int INDICATOR_MAX = 7;
     private static final String tag = "DustBinModel";
     private DustBinScanResultListener listener;
@@ -36,27 +42,119 @@ public class DustBinModel {
     private SibataDustIndicator [] indicators = new SibataDustIndicator[5];
     private LvlinDustIndicator referenceIndicator;
     private ZetianDustIndicator backUpIndicator;
+    private PlcDriver plcDriver;
+    private StepMotor stepMotor;
     private List<ComparativeDustData> list = new ArrayList<>();
     private float lastReference = 0f,nowReference = 0f;
     private float [] sumTest = new float[INDICATOR_MAX];
     private float backupTest=0f,sumBackupTest = 0f;
     float[] test = new float[INDICATOR_MAX];
+    private float screwSpeed,dustParameter;
+    private int screwPath;
+    private SystemConfig config;
+
 
     private String fileName,pathName;
 
-    public DustBinModel(DustBinScanResultListener listener){
+    public DustBinModel(DustBinScanResultListener listener, SystemConfig config){
         this.listener = listener;
         for(int i=0;i<5;i++){
             indicators[i] = new SibataDustIndicator(i+4,new TestIndicator(i+1));
         }
         referenceIndicator = new LvlinDustIndicator(1,new TestIndicator(0));
-        backUpIndicator = new ZetianDustIndicator(3,new TestIndicator(6));
+        backUpIndicator = new ZetianDustIndicator(8,new TestIndicator(6));
         Log.d(tag,"开始扫描");
         new ScanThread().start();
+        plcDriver = new PlcDriver(2,this);
+        stepMotor = new StepMotor(0,this);
+        stepMotor.readSetting();
+        this.config = config;
+        screwPath = config.getConfigInt("ScrewPath");
+        screwSpeed = config.getConfigFloat("ScrewSpeed");
+        dustParameter = config.getConfigFloat("DustParameter");
+        if(screwPath == 0){
+            screwPath = 10;
+        }
+        if(screwSpeed == 0f){
+            screwSpeed = 10;
+        }
+        if(dustParameter == 0f){
+            dustParameter = 1374.296875f;
+        }
+    }
+
+    public  void setDustGenerateSetting(float speed,int path,float parameter){
+        screwSpeed = speed;
+        screwPath = path;
+        dustParameter = parameter;
+        config.saveConfig("ScrewPath",path);
+        config.saveConfig("ScrewSpeed",speed);
+        config.saveConfig("DustParameter",parameter);
+    }
+
+    public void startDustGenerate(float speed,int path,float parameter){
+        screwSpeed = speed;
+        screwPath = path;
+        dustParameter = parameter;
+        //计算细分，转速，总步数并设置
+        stepMotor.setDustGeneration(speed,path);
+        stepMotor.move();
+    }
+
+    public String getDustGenerateInfo(){
+        if(screwPath > 0){
+            float time = screwPath;
+            time = time / screwSpeed;
+            long stamp = tools.nowtime2timestamp()+(long) time*60000l;
+            float mass = screwSpeed / 60f * 897.5f*.049f*3.14f;// mg/s
+            float volume = 0.2f*.16f*3.14f;//m³/s
+            return "发尘时间:"+String.valueOf(time)+"min 预计结束时间:"+tools.timestamp2string(stamp) +" 发尘浓度:"+String.valueOf(mass/volume)+"mg/m³";
+        }else{
+            float time = Math.abs(screwPath);
+            time = time / screwSpeed;
+            long stamp = tools.nowtime2timestamp()+(long) time*60000l;
+            return "预计推动时间:"+String.valueOf(time)+"min 预计结束时间:"+tools.timestamp2string(stamp);
+        }
     }
 
     public void stopScan(){
         run = false;
+    }
+
+    @Override
+    public void onResult(boolean key) {
+
+    }
+
+    public void switchBrush(boolean key){
+        plcDriver.setIo(0,key);
+    }
+
+    public void onStopDustGenerate(){
+        plcDriver.setIo(0,false);
+        stepMotor.stop();
+    }
+
+    @Override
+    public void onResult(StepMotorDriverSettingFormat format) {
+
+    }
+
+    @Override
+    public void onProcess(String content, int process) {
+
+    }
+
+    public float getScrewSpeed() {
+        return screwSpeed;
+    }
+
+    public float getDustParameter() {
+        return dustParameter;
+    }
+
+    public int getScrewPath() {
+        return screwPath;
     }
 
     private class TestIndicator implements OnReadDustResultListener{

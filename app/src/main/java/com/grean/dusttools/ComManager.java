@@ -27,7 +27,7 @@ public class ComManager {
         coms[0] = new COM(0,9600);
         coms[1] = new COM(1,9600);
         coms[2] = new COM(2,9600);
-        coms[3] = new COM(3,57600);
+        coms[3] = new COM(3,9600);//coms[3] = new COM(3,57600);//泽天粉尘仪波特率
     }
 
     public boolean writeRegister(int comNumber,byte id,int reg,int value){

@@ -35,7 +35,7 @@ public class SibataDustIndicator {
 
         private boolean readCpm(){
             //Log.d(tag,String.valueOf(comNumber));
-            return ComManager.getInstance().readRegister(comNumber, (byte) 0x01,1,1,this);
+            return ComManager.getInstance().readRegister(comNumber, (byte) 0xdd,1,1,this);
         }
 
         @Override

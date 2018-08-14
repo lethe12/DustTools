@@ -7,7 +7,7 @@ import android.util.Log;
  */
 
 public class StepMotorDriverSettingFormat {
-    private int startingSpeed,maxSpeed,plus;
+    private int startingSpeed,maxSpeed,plus,subdivide;
 
    public StepMotorDriverSettingFormat(SettingBuilder builder){
        this.startingSpeed = builder.startingSpeed;
@@ -18,6 +18,14 @@ public class StepMotorDriverSettingFormat {
    public float getTime(){
        return (float) (0.2+(float)(Math.abs(plus) - startingSpeed*16/3)*6/((float)maxSpeed*160));
    }
+
+    public int getSubdivide() {
+        return subdivide;
+    }
+
+    public void setSubdivide(int subdivide) {
+        this.subdivide = subdivide;
+    }
 
     public void setStartingSpeed(int startingSpeed) {
         this.startingSpeed = startingSpeed;

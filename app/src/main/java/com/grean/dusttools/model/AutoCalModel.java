@@ -267,6 +267,9 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
                 list.add(format);
                 listener.onInsertItem(format);
                 mainBoard.ctrl.startDustIndicator();
+                device1.ctrl.startDustIndicator();
+                device2.ctrl.startDustIndicator();
+                device3.ctrl.startDustIndicator();
                 for(int i=0;i<MAX;i++){
                     states[i] = "等待下次测试";
                 }
