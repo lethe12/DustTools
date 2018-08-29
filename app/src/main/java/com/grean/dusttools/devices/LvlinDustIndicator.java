@@ -34,7 +34,7 @@ public class LvlinDustIndicator {
         }
 
         private boolean readCpm(){
-           // Log.d(tag,String.valueOf(comNumber));
+            //Log.d(tag,String.valueOf(comNumber));
             return ComManager.getInstance().readRegister(comNumber, (byte) 0x02,0x0020,2,this);
         }
 

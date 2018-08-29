@@ -99,6 +99,10 @@ public class DustBinModel implements OnReadIoListener ,OnStepMotorDriverSettingL
         //计算细分，转速，总步数并设置
         stepMotor.setDustGeneration(speed,path);
         stepMotor.move();
+        float time = screwPath;
+        time = time / screwSpeed;
+        long stamp = tools.nowtime2timestamp()+(long) time*60000l;
+        listener.onDustGenerationStart(stamp);
     }
 
     public String getDustGenerateInfo(){

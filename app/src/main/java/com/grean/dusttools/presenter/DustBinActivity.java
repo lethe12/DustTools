@@ -31,8 +31,11 @@ import com.view.NoscrollListView;
 import com.view.SyncHorizontalScrollView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by weifeng on 2018/2/9.
@@ -40,7 +43,7 @@ import java.util.List;
 
 public class DustBinActivity extends Activity implements DustBinScanResultListener,View.OnClickListener{
     private static final String tag = "DustBinActivity";
-    private static final int msgUpdateRealTimeResult = 1,msgInsertItem = 2;
+    private static final int msgUpdateRealTimeResult = 1,msgInsertItem = 2,msgDustGenerateEnd =3;
 
     private NoscrollListView mLeft;
     private LeftAdapter mLeftAdapter;
@@ -53,10 +56,13 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
     private Switch swBrush,swDustGenerate;
     private EditText etScrewSpeed,etScrewPath,etParameter;
     private TextView realTime,tvDustInfo;
+    private Button btnSaveParameter;
     private String[] realTimeString = new String[DustBinModel.INDICATOR_MAX];
 
     private DustBinModel model;
     private SystemConfig config;
+
+    private Timer dustGenerationTimer;
 
     private ComparativeDustData dustData;
 
@@ -91,6 +97,17 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
                     mListData.add(String.valueOf(index));
 
                     break;
+                case msgDustGenerateEnd:
+                    swDustGenerate.setChecked(false);
+                    swBrush.setChecked(false);
+                    Toast.makeText(DustBinActivity.this,"发尘结束",Toast.LENGTH_SHORT).show();
+                    etScrewPath.setEnabled(true);
+                    etScrewSpeed.setEnabled(true);
+                    etParameter.setEnabled(true);
+                    btnSaveParameter.setEnabled(true);
+                    model.onStopDustGenerate();
+                    backEnable = true;
+                    break;
                 default:
 
                     break;
@@ -100,6 +117,13 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
     };
 
 
+    private class DustGenerateTimerTask extends TimerTask{
+
+        @Override
+        public void run() {
+            handler.sendEmptyMessage(msgDustGenerateEnd);
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,7 +157,8 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
         etScrewSpeed = findViewById(R.id.etScrewSpeed);
         findViewById(R.id.swBrush).setOnClickListener(this);
         findViewById(R.id.swDustGenerate).setOnClickListener(this);
-        findViewById(R.id.btnSaveParaMeter).setOnClickListener(this);
+        btnSaveParameter = findViewById(R.id.btnSaveParaMeter);
+        btnSaveParameter.setOnClickListener(this);
         swBrush = findViewById(R.id.swBrush);
         swDustGenerate = findViewById(R.id.swDustGenerate);
 
@@ -183,6 +208,13 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
     }
 
     @Override
+    public void onDustGenerationStart(long endTime) {
+        dustGenerationTimer = new Timer();
+        Date when = new Date(endTime);
+        dustGenerationTimer.schedule(new DustGenerateTimerTask(),when);
+    }
+
+    @Override
     protected void onStop() {
         /*if(isFinishing()) {
             model.stopScan();
@@ -217,9 +249,9 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
                     etScrewSpeed.setError("最大值 20");
                     break;
                 }
-                if((Integer.valueOf(etScrewPath.getText().toString()) > 25)||(Integer.valueOf(etScrewPath.getText().toString()) < -25)){
+                if((Integer.valueOf(etScrewPath.getText().toString()) > 250)||(Integer.valueOf(etScrewPath.getText().toString()) < -250)){
                     Toast.makeText(this,"设置速度超范围", Toast.LENGTH_SHORT).show();
-                    etScrewPath.setError("最大行程 25mm");
+                    etScrewPath.setError("最大行程 250mm");
                     break;
                 }
 
@@ -237,26 +269,32 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
                         etScrewSpeed.setError("最大值 20");
                         break;
                     }
-                    if((Integer.valueOf(etScrewPath.getText().toString()) >= 25)||(Integer.valueOf(etScrewPath.getText().toString()) <= -25)){
+                    if((Integer.valueOf(etScrewPath.getText().toString()) > 250)||(Integer.valueOf(etScrewPath.getText().toString()) < -250)){
                         Toast.makeText(this,"设置速度超范围", Toast.LENGTH_SHORT).show();
-                        etScrewPath.setError("最大行程 25mm");
+                        etScrewPath.setError("最大行程 250mm");
                         break;
                     }
-
+                    btnSaveParameter.setEnabled(false);
                     etScrewPath.setEnabled(false);
                     etScrewSpeed.setEnabled(false);
                     etParameter.setEnabled(false);
-                    backEnable = true;
+                    backEnable = false;
                     model.startDustGenerate(Float.valueOf(etScrewSpeed.getText().toString()),
                             Integer.valueOf(etScrewPath.getText().toString()),Float.valueOf(etParameter.getText().toString()));
                     tvDustInfo.setText(model.getDustGenerateInfo());
 
                 }else{
+                    if(dustGenerationTimer!=null){
+                        dustGenerationTimer.cancel();
+                        dustGenerationTimer = null;
+                    }
+                    swBrush.setChecked(false);
+                    btnSaveParameter.setEnabled(true);
                     etScrewPath.setEnabled(true);
                     etScrewSpeed.setEnabled(true);
                     etParameter.setEnabled(true);
                     model.onStopDustGenerate();
-                    backEnable = false;
+                    backEnable = true;
                 }
                 break;
             default:

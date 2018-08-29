@@ -55,6 +55,8 @@ public class StepMotorTesterActivity extends Activity implements View.OnClickLis
         tvRemandTime = findViewById(R.id.tvRemaindTime);
         findViewById(R.id.btnStepMotorSaveSetting).setOnClickListener(this);
         findViewById(R.id.btnStepMotorMove).setOnClickListener(this);
+        findViewById(R.id.btnMotorBackward).setOnClickListener(this);
+        findViewById(R.id.btnMotorForward).setOnClickListener(this);
         model = new StepMotorTestModel(this);
         model.getStepMotorSetting();
 
@@ -83,6 +85,24 @@ public class StepMotorTesterActivity extends Activity implements View.OnClickLis
                         Integer.valueOf(etMax.getText().toString()),Integer.valueOf(etPlus.getText().toString()));
                 break;
             case R.id.btnStepMotorMove:
+                model.setStepMotorSetting(Integer.valueOf(etStarting.getText().toString()),
+                        Integer.valueOf(etMax.getText().toString()),Integer.valueOf(etPlus.getText().toString()));
+                dialogFragment = new ProcessDialogFragment();
+                dialogFragment.setCancelable(false);
+                dialogFragment.setOnHandleListener(this);
+                dialogFragment.show(getFragmentManager(),"ProcessDialogFragment");
+                model.setStepMotorMove((int) format.getTime()+1);
+                break;
+            case R.id.btnMotorBackward:
+                model.setStepMotorSetting(5,20,-1600);
+                dialogFragment = new ProcessDialogFragment();
+                dialogFragment.setCancelable(false);
+                dialogFragment.setOnHandleListener(this);
+                dialogFragment.show(getFragmentManager(),"ProcessDialogFragment");
+                model.setStepMotorMove((int) format.getTime()+1);
+                break;
+            case R.id.btnMotorForward:
+                model.setStepMotorSetting(5,20,1600);
                 dialogFragment = new ProcessDialogFragment();
                 dialogFragment.setCancelable(false);
                 dialogFragment.setOnHandleListener(this);

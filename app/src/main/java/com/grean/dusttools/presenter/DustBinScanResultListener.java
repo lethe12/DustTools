@@ -21,4 +21,6 @@ public interface DustBinScanResultListener {
      * @param data
      */
     void insertItem(ComparativeDustData data);
+
+    void onDustGenerationStart(long endTime);
 }

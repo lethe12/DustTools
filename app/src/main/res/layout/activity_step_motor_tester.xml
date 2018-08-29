@@ -105,10 +105,28 @@
             android:id="@+id/tvRemaindTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="未连接驱动器"
+            android:layout_centerVertical="true"
+            android:layout_alignStart="@+id/btnMotorForward" />
+
+        <Button
+            android:id="@+id/btnMotorForward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignStart="@+id/textView2"
             android:layout_below="@+id/etStepMotorStartingSpeed"
-            android:layout_marginTop="30dp"
-            android:text="未连接驱动器" />
+            android:layout_marginTop="36dp"
+            android:text="正转" />
+
+        <Button
+            android:id="@+id/btnMotorBackward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/btnMotorForward"
+            android:layout_alignBottom="@+id/btnMotorForward"
+            android:layout_alignStart="@+id/textView3"
+            android:layout_marginStart="41dp"
+            android:text="反转" />
 
     </RelativeLayout>
 
