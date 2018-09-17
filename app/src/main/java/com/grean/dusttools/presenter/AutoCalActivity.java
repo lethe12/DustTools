@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.grean.dusttools.R;
+import com.grean.dusttools.SystemConfig;
 import com.grean.dusttools.devices.DustMainBoardCalInfoFormat;
 import com.grean.dusttools.model.AutoCalModel;
 import com.tools;
@@ -113,7 +114,9 @@ public class AutoCalActivity extends Activity implements OnAutoCalListener,View.
         swAutoTest = findViewById(R.id.swCountinueTest);
         swAutoTest.setOnClickListener(this);
 
-        model = new AutoCalModel(this);
+        model = new AutoCalModel(this,new SystemConfig(this));
+        etMotor1Steps.setText(model.getSteps());
+        etMotor1Time.setText(model.getTime());
     }
 
     @Override

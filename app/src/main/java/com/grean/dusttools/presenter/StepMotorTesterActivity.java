@@ -94,20 +94,20 @@ public class StepMotorTesterActivity extends Activity implements View.OnClickLis
                 model.setStepMotorMove((int) format.getTime()+1);
                 break;
             case R.id.btnMotorBackward:
-                model.setStepMotorSetting(5,20,-1600);
+                model.setStepMotorSetting(5,20,-200);
                 dialogFragment = new ProcessDialogFragment();
                 dialogFragment.setCancelable(false);
                 dialogFragment.setOnHandleListener(this);
                 dialogFragment.show(getFragmentManager(),"ProcessDialogFragment");
-                model.setStepMotorMove((int) format.getTime()+1);
+                model.setStepMotorMove(4);
                 break;
             case R.id.btnMotorForward:
-                model.setStepMotorSetting(5,20,1600);
+                model.setStepMotorSetting(5,20,200);
                 dialogFragment = new ProcessDialogFragment();
                 dialogFragment.setCancelable(false);
                 dialogFragment.setOnHandleListener(this);
                 dialogFragment.show(getFragmentManager(),"ProcessDialogFragment");
-                model.setStepMotorMove((int) format.getTime()+1);
+                model.setStepMotorMove(4);
                 break;
             default:
 

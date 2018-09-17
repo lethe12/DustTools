@@ -3,6 +3,7 @@ package com.grean.dusttools.model;
 import android.util.Log;
 
 import com.SaveDataToExcel;
+import com.grean.dusttools.SystemConfig;
 import com.grean.dusttools.devices.DustMainBoard;
 import com.grean.dusttools.devices.DustMainBoardCalInfoFormat;
 import com.grean.dusttools.devices.OnMainBoardListener;
@@ -26,8 +27,10 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
     private List<DustMainBoardCalInfoFormat> list = new ArrayList<>();
     private CalListener[] calListeners = new CalListener[MAX];
     private SaveDataToExcel excel;
+    private SystemConfig config;
 
-    public AutoCalModel(OnAutoCalListener listener){
+    public AutoCalModel(OnAutoCalListener listener,SystemConfig config){
+        this.config = config;
         this.listener = listener;
         autoCalThread = new AutoCalThread();
         calListeners[0] = new CalListener(0);
@@ -62,10 +65,20 @@ public class AutoCalModel implements SaveDataToExcel.OnWriteContentListener{
         }
     }
 
+    public String getSteps(){
+        return String.valueOf(config.getConfigInt("AutoCalStep"));
+    }
+
+    public String getTime(){
+        return String.valueOf(config.getConfigInt("AutoCalTime"));
+    }
+
     public void startAutoCal(String stepString,String timeString){
         if(!run){
             int step = Integer.valueOf(stepString);
             int time = Integer.valueOf(timeString);
+            config.saveConfig("AutoCalStep",step);
+            config.saveConfig("AutoCalTime",time);
             mainBoard.setMotorRounds(step);
             mainBoard.setMotorTime(time);
             device1.setMotorRounds(step);

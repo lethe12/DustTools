@@ -16,7 +16,8 @@ public class StepMotorDriverSettingFormat {
    }
 
    public float getTime(){
-       return (float) (0.2+(float)(Math.abs(plus) - startingSpeed*16/3)*6/((float)maxSpeed*160));
+       //return (float) (0.2+(float)(Math.abs(plus) - startingSpeed*16/3)*6/((float)maxSpeed*160));
+       return 0.5f+(float)(Math.abs(plus)/200/maxSpeed*60);
    }
 
     public int getSubdivide() {
@@ -71,7 +72,7 @@ public class StepMotorDriverSettingFormat {
         public SettingBuilder setPlus(int plus){
 
             if(plus == 0){
-                this.plus = 16000;
+                this.plus = 200;
             }else{
                 this.plus = plus;
             }
