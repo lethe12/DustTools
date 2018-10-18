@@ -57,7 +57,11 @@ public class AutoCalActivity extends Activity implements OnAutoCalListener,View.
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case MSG_REAL_TIME:
-                    tvMotor1State.setText(stateStrings[0]);
+                    String string = stateStrings[0];
+                    for(int i=1;i<AutoCalModel.MAX;i++){
+                        string+=" | "+stateStrings[i];
+                    }
+                    tvMotor1State.setText(string);
                     break;
                 case MSG_INSERT_ITEM:
                     String[] strings= new String[7];

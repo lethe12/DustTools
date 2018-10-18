@@ -30,6 +30,20 @@ public class ComManager {
         coms[3] = new COM(3,9600);//coms[3] = new COM(3,57600);//泽天粉尘仪波特率
     }
 
+    public boolean readBytes(int comNumber,byte[] content,ReadModBusRegistersListener listener){
+        if(isNumOk(comNumber)){
+            if(comNumber <= 3){
+                coms[comNumber].readBytes(content,listener);
+            }else{
+                socketCom[comNumber-4].readBytes(content,listener);
+            }
+
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public boolean writeRegister(int comNumber,byte id,int reg,int value){
         if(isNumOk(comNumber)) {
             if (comNumber <= 3) {
@@ -172,6 +186,10 @@ public class ComManager {
                     default:
                         break;
                 }
+            }else if((rec[0]==0xAA)&&(size==5)){
+                listener.onComplete(rec,size);
+            }else{
+
             }
             //Log.d(tag,"同步接收:size="+String.valueOf(size)+"content="+tools.bytesToHexString(rec,size));
         }
@@ -191,6 +209,13 @@ public class ComManager {
             boolean success = addSendBuff(cmd,0);
             Log.d(tag,"发送"+String.valueOf(success));
 
+        }
+
+        public void readBytes(byte[] buff,ReadModBusRegistersListener listener){
+            byte[] cmd = new byte[buff.length];
+            System.arraycopy(buff,0,cmd,0,buff.length);
+            this.listener = listener;
+            addSendBuff(cmd,WRITE_REGISTER);
         }
 
         /**
@@ -290,6 +315,10 @@ public class ComManager {
                    // Log.d(tag,"RS232"+String.valueOf(state)+":"+tools.bytesToHexString(rec,size));
                     listener.onComplete(rec,size);
                 }
+            }else if((rec[0]==0xAA)&&(size==5)){
+                listener.onComplete(rec,size);
+            }else{
+
             }
             //Log.d(tag,"RS232"+String.valueOf(state)+":"+tools.bytesToHexString(rec,size));
         }
@@ -297,6 +326,13 @@ public class ComManager {
         @Override
         protected void asyncCommunicationProtocol(byte[] rec, int size) {
 
+        }
+
+        public void readBytes(byte[] buff,ReadModBusRegistersListener listener){
+            byte[] cmd = new byte[buff.length];
+            System.arraycopy(buff,0,cmd,0,buff.length);
+            this.listener = listener;
+            addSendBuff(cmd,WRITE_REGISTER);
         }
 
         /**

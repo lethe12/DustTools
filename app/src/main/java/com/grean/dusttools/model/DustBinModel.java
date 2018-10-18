@@ -3,6 +3,7 @@ package com.grean.dusttools.model;
 import android.util.Log;
 
 import com.grean.dusttools.SystemConfig;
+import com.grean.dusttools.devices.Cld50DustIndicator;
 import com.grean.dusttools.devices.ComparativeDustData;
 import com.grean.dusttools.devices.LvlinDustIndicator;
 import com.grean.dusttools.devices.OnReadDustResultListener;
@@ -42,6 +43,7 @@ public class DustBinModel implements OnReadIoListener ,OnStepMotorDriverSettingL
     private SibataDustIndicator [] indicators = new SibataDustIndicator[5];
     private LvlinDustIndicator referenceIndicator;
     private ZetianDustIndicator backUpIndicator;
+    private Cld50DustIndicator compareIndicator;
     private PlcDriver plcDriver;
     private StepMotor stepMotor;
     private List<ComparativeDustData> list = new ArrayList<>();
@@ -59,10 +61,11 @@ public class DustBinModel implements OnReadIoListener ,OnStepMotorDriverSettingL
     public DustBinModel(DustBinScanResultListener listener, SystemConfig config){
         this.listener = listener;
         for(int i=0;i<5;i++){
-            indicators[i] = new SibataDustIndicator(i+4,new TestIndicator(i+1));
+            indicators[i] = new SibataDustIndicator(i+3,new TestIndicator(i+1));
         }
         referenceIndicator = new LvlinDustIndicator(1,new TestIndicator(0));
         backUpIndicator = new ZetianDustIndicator(8,new TestIndicator(6));
+
         Log.d(tag,"开始扫描");
         new ScanThread().start();
         plcDriver = new PlcDriver(2,this);
