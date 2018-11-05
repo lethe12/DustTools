@@ -78,6 +78,11 @@ public class StepMotorTesterActivity extends Activity implements View.OnClickLis
     }
 
     @Override
+    public void onStatus(boolean run) {
+
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnStepMotorSaveSetting:

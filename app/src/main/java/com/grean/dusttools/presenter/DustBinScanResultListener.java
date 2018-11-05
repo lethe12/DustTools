@@ -23,4 +23,10 @@ public interface DustBinScanResultListener {
     void insertItem(ComparativeDustData data);
 
     void onDustGenerationStart(long endTime);
+
+    /**
+     * 电机运行状态
+     * @param run true正在运行 false 停止
+     */
+    void onMotorStatus(boolean run);
 }

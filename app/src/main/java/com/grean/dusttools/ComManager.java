@@ -332,6 +332,7 @@ public class ComManager {
             byte[] cmd = new byte[buff.length];
             System.arraycopy(buff,0,cmd,0,buff.length);
             this.listener = listener;
+            //Log.d(tag,tools.bytesToHexString(cmd,cmd.length));
             addSendBuff(cmd,WRITE_REGISTER);
         }
 
@@ -384,6 +385,7 @@ public class ComManager {
             cmd[5] = buff[1];
             tools.addCrc16(cmd,0,6);
             this.id = address;
+            //Log.d(tag,tools.bytesToHexString(cmd,cmd.length));
             addSendBuff(cmd,WRITE_REGISTER);
         }
         /**
@@ -410,7 +412,7 @@ public class ComManager {
             }
             tools.addCrc16(cmd,0,value.length*2+7);
             this.id = address;
-            //Log.d(tag,tools.bytesToHexString(cmd,cmd.length));
+            Log.d(tag,tools.bytesToHexString(cmd,cmd.length));
             addSendBuff(cmd,WRITE_REGISTER);
         }
         /**

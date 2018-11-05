@@ -43,7 +43,7 @@ import java.util.TimerTask;
 
 public class DustBinActivity extends Activity implements DustBinScanResultListener,View.OnClickListener{
     private static final String tag = "DustBinActivity";
-    private static final int msgUpdateRealTimeResult = 1,msgInsertItem = 2,msgDustGenerateEnd =3;
+    private static final int msgUpdateRealTimeResult = 1,msgInsertItem = 2,msgDustGenerateEnd =3,msgMotorRunning=4;
 
     private NoscrollListView mLeft;
     private LeftAdapter mLeftAdapter;
@@ -52,8 +52,9 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
     private List<String> mListData;
     private int index=0;
     private boolean backEnable = true;//返回键使能
+    private boolean motorRunning = false;
     //private Button btnSave2File;
-    private Switch swBrush,swDustGenerate;
+    private Switch swBrush,swDustGenerate,swMotorRunning;
     private EditText etScrewSpeed,etScrewPath,etParameter;
     private TextView realTime,tvDustInfo;
     private Button btnSaveParameter;
@@ -71,6 +72,9 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what){
+                case msgMotorRunning:
+                    swMotorRunning.setChecked(motorRunning);
+                    break;
                 case msgUpdateRealTimeResult:
                     String string="";
                     for(int i=0;i<DustBinModel.INDICATOR_MAX;i++){
@@ -161,7 +165,7 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
         btnSaveParameter.setOnClickListener(this);
         swBrush = findViewById(R.id.swBrush);
         swDustGenerate = findViewById(R.id.swDustGenerate);
-
+        swMotorRunning = findViewById(R.id.swMotorRun);
         mLeft = (NoscrollListView) findViewById(R.id.lv_left);
         mDataHorizontal = (SyncHorizontalScrollView) findViewById(R.id.data_horizontal);
         mHeaderHorizontal = (SyncHorizontalScrollView) findViewById(R.id.header_horizontal);
@@ -187,6 +191,7 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
         mLeftAdapter= new LeftAdapter();
         mLeft.setAdapter(mLeftAdapter);
         findViewById(R.id.btnSaveDustBin).setOnClickListener(this);
+        swMotorRunning.setOnClickListener(this);
         //setData();
     }
 
@@ -212,6 +217,12 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
         dustGenerationTimer = new Timer();
         Date when = new Date(endTime);
         dustGenerationTimer.schedule(new DustGenerateTimerTask(),when);
+    }
+
+    @Override
+    public void onMotorStatus(boolean run) {
+        motorRunning = run;
+        handler.sendEmptyMessage(msgMotorRunning);
     }
 
     @Override
@@ -244,9 +255,9 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
                 }
                 break;
             case R.id.btnSaveParaMeter:
-                if(Float.valueOf(etScrewSpeed.getText().toString()) > 20f){
+                if(Float.valueOf(etScrewSpeed.getText().toString()) > 14f){
                     Toast.makeText(this,"设置速度超范围", Toast.LENGTH_SHORT).show();
-                    etScrewSpeed.setError("最大值 20");
+                    etScrewSpeed.setError("最大值 14");
                     break;
                 }
                 if((Integer.valueOf(etScrewPath.getText().toString()) > 250)||(Integer.valueOf(etScrewPath.getText().toString()) < -250)){
@@ -262,11 +273,18 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
             case R.id.swBrush:
                 model.switchBrush(swBrush.isChecked());
                 break;
+            case R.id.swMotorRun:
+                if(swMotorRunning.isChecked()){
+
+                }else{
+                    model.onStopDustGenerate();
+                }
+                break;
             case R.id.swDustGenerate:
                 if(swDustGenerate.isChecked()){
-                    if(Float.valueOf(etScrewSpeed.getText().toString()) > 20f){
+                    if(Float.valueOf(etScrewSpeed.getText().toString()) > 14f){
                         Toast.makeText(this,"设置速度超范围", Toast.LENGTH_SHORT).show();
-                        etScrewSpeed.setError("最大值 20");
+                        etScrewSpeed.setError("最大值 14");
                         break;
                     }
                     if((Integer.valueOf(etScrewPath.getText().toString()) > 250)||(Integer.valueOf(etScrewPath.getText().toString()) < -250)){

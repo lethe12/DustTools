@@ -71,6 +71,7 @@ public class DustBinModel implements OnReadIoListener ,OnStepMotorDriverSettingL
         plcDriver = new PlcDriver(2,this);
         stepMotor = new StepMotor(0,this);
         stepMotor.readSetting();
+
         this.config = config;
         screwPath = config.getConfigInt("ScrewPath");
         screwSpeed = config.getConfigFloat("ScrewSpeed");
@@ -101,8 +102,9 @@ public class DustBinModel implements OnReadIoListener ,OnStepMotorDriverSettingL
         dustParameter = parameter;
         //计算细分，转速，总步数并设置
         stepMotor.setDustGeneration(speed,path);
-        stepMotor.move();
-        float time = screwPath;
+        //stepMotor.move();
+        stepMotor.triggerSpeed();
+        float time = Math.abs(screwPath);
         time = time / screwSpeed;
         long stamp = tools.nowtime2timestamp()+(long) time*60000l;
         listener.onDustGenerationStart(stamp);
@@ -150,6 +152,11 @@ public class DustBinModel implements OnReadIoListener ,OnStepMotorDriverSettingL
     @Override
     public void onProcess(String content, int process) {
 
+    }
+
+    @Override
+    public void onStatus(boolean run) {
+        listener.onMotorStatus(run);
     }
 
     public float getScrewSpeed() {
@@ -208,6 +215,12 @@ public class DustBinModel implements OnReadIoListener ,OnStepMotorDriverSettingL
         public void run() {
             run = true;
             int times = 0;
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            stepMotor.readStatus();
             while (run&&(!interrupted())){
                 referenceIndicator.readDust();
                 for(int i=0;i<5;i++){

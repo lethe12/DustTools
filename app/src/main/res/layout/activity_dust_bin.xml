@@ -89,6 +89,13 @@
         android:orientation="horizontal">
 
         <Switch
+            android:id="@+id/swMotorRun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="电机状态" />
+
+        <Switch
             android:id="@+id/swBrush"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

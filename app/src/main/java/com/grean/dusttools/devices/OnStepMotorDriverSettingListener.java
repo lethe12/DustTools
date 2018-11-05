@@ -7,4 +7,5 @@ package com.grean.dusttools.devices;
 public interface OnStepMotorDriverSettingListener {
     void onResult(StepMotorDriverSettingFormat format);
     void onProcess(String content,int process);
+    void onStatus(boolean run);
 }
