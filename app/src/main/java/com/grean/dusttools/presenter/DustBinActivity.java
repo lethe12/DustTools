@@ -255,9 +255,9 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
                 }
                 break;
             case R.id.btnSaveParaMeter:
-                if(Float.valueOf(etScrewSpeed.getText().toString()) > 14f){
+                if(Float.valueOf(etScrewSpeed.getText().toString()) > 18f){
                     Toast.makeText(this,"设置速度超范围", Toast.LENGTH_SHORT).show();
-                    etScrewSpeed.setError("最大值 14");
+                    etScrewSpeed.setError("最大值 18");
                     break;
                 }
                 if((Integer.valueOf(etScrewPath.getText().toString()) > 250)||(Integer.valueOf(etScrewPath.getText().toString()) < -250)){
@@ -282,9 +282,9 @@ public class DustBinActivity extends Activity implements DustBinScanResultListen
                 break;
             case R.id.swDustGenerate:
                 if(swDustGenerate.isChecked()){
-                    if(Float.valueOf(etScrewSpeed.getText().toString()) > 14f){
+                    if(Float.valueOf(etScrewSpeed.getText().toString()) > 18f){
                         Toast.makeText(this,"设置速度超范围", Toast.LENGTH_SHORT).show();
-                        etScrewSpeed.setError("最大值 14");
+                        etScrewSpeed.setError("最大值 18");
                         break;
                     }
                     if((Integer.valueOf(etScrewPath.getText().toString()) > 250)||(Integer.valueOf(etScrewPath.getText().toString()) < -250)){
